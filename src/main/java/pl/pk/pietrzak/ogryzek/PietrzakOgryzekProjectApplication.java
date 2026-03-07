@@ -4,13 +4,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.sql.DataSource;
 
 @SpringBootApplication
-@EntityScan("pl.pk.pietrzak.ogryzek.entity")
 @EnableJpaRepositories("pl.pk.pietrzak.ogryzek.entity")
 public class PietrzakOgryzekProjectApplication {
 
