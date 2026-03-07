@@ -20,4 +20,12 @@ public class Project {
 
     private String name;
     private String description;
+
+    @ManyToMany
+    @JoinTable(
+            name = "project_users",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<Users> users = new HashSet<>();
 }
