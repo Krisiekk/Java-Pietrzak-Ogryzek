@@ -2,7 +2,7 @@ package pl.pk.pietrzak.ogryzek.controller;
 
 import org.springframework.web.bind.annotation.*;
 import pl.pk.pietrzak.ogryzek.entity.Project;
-import pl.pk.pietrzak.ogryzek.entity.ProjectRepository;
+import pl.pk.pietrzak.ogryzek.service.ProjectService;
 
 import java.util.List;
 
@@ -10,19 +10,19 @@ import java.util.List;
 @RequestMapping("/api/projects")
 public class ProjectController {
 
-    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
-    public ProjectController(ProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
     }
 
     @GetMapping
     public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+        return projectService.getAllProjects();
     }
 
     @PostMapping
     public Project createProject(@RequestBody Project project) {
-        return projectRepository.save(project);
+        return projectService.createProject(project);
     }
 }
