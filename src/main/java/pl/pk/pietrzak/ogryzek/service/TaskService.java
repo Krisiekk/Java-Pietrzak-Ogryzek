@@ -2,6 +2,7 @@ package pl.pk.pietrzak.ogryzek.service;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pl.pk.pietrzak.ogryzek.entity.Task;
@@ -44,3 +45,29 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 }
+    public Optional<Task> getTaskById(Long id) {
+        return taskRepository.findById(id);
+    }
+
+    public void deleteTask(Long id) {
+        taskRepository.deleteById(id);
+    }
+
+    public Task updateTask(Long id, Task updatedTask) {
+        return taskRepository.findById(id)
+                .map(task -> {
+                    task.setName(updatedTask.getName());
+                    task.setDescription(updatedTask.getDescription());
+                    task.setTaskType(updatedTask.getTaskType());
+                    task.setProject(updatedTask.getProject());
+                    task.setAssignedUser(updatedTask.getAssignedUser());
+                    return taskRepository.save(task);
+                })
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+    }
+
+
+
+
+}
+
