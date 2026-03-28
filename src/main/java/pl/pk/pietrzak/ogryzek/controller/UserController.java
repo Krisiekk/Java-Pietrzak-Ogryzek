@@ -30,12 +30,10 @@ public class UserController {
     }
 
     @PostMapping
-    public Users createUser(@RequestBody Users user) {
-        return userService.createUser(user);
     @Operation(summary = "Utworz nowego uzytkownika", description = "Tworzy nowego uzytkownika na podstawie przekazanych danych")
     public Users createUser(
             @Parameter(description = "Dane uzytkownika do utworzenia", required = true)
             @RequestBody Users user) {
-        return userRepository.save(user);
+        return userService.createUser(user);
     }
 }
