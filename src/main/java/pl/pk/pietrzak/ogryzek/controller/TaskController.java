@@ -30,12 +30,10 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskService.createTask(task);
     @Operation(summary = "Utworz nowe zadanie", description = "Tworzy nowe zadanie na podstawie przekazanych danych")
     public Task createTask(
             @Parameter(description = "Dane zadania do utworzenia", required = true)
             @RequestBody Task task) {
-        return taskRepository.save(task);
+        return taskService.createTask(task);
     }
 }
