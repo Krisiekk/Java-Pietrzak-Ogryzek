@@ -1,6 +1,8 @@
 package pl.pk.pietrzak.ogryzek.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import pl.pk.pietrzak.ogryzek.entity.UserRepository;
 import pl.pk.pietrzak.ogryzek.entity.Users;
@@ -21,4 +23,23 @@ public class UserService {
     public Users createUser(Users user) {
         return userRepository.save(user);
     }
+
+    public Optional<Users> getUserById(Integer id) {
+        return userRepository.findById(id);
+    }
+
+    public void deleteUser(Integer id) {
+        userRepository.deleteById(id);
+    }
+
+    public Users updateUser(Integer id, Users updatedUser) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setUsername(updatedUser.getUsername());
+                    user.setProjects(updatedUser.getProjects());
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
 }
