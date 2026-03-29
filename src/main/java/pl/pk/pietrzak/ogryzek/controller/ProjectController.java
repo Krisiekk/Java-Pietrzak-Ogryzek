@@ -51,7 +51,7 @@ public class ProjectController {
             @PathVariable Long id) {
         projectService.deleteProject(id);
     }
-}
+
     @GetMapping("/{id}")
     @Operation(summary = "Pobierz projekt po ID", description = "Zwraca projekt o podanym ID")
     public Project getProjectById(
