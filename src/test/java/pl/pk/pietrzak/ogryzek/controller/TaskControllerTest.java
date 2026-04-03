@@ -71,6 +71,17 @@ public class TaskControllerTest {
     }
 
     @Test
+    @DisplayName("Powinien zwrócić pusty wynik gdy zadanie nie istnieje")
+    void shouldReturnEmptyWhenTaskNotFound() throws Exception {
+        when(taskService.getTaskById(999L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/tasks/999"))
+                .andExpect(status().isOk());
+
+        verify(taskService, times(1)).getTaskById(999L);
+    }
+
+    @Test
     @DisplayName("Powinien utworzyć nowe zadanie")
     void shouldCreateTask() throws Exception {
         Task task = new Task();

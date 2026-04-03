@@ -69,6 +69,17 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Powinien zwrócić pusty wynik gdy użytkownik nie istnieje")
+    void shouldReturnEmptyWhenUserNotFound() throws Exception {
+        when(userService.getUserById(999)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/users/999"))
+                .andExpect(status().isOk());
+
+        verify(userService, times(1)).getUserById(999);
+    }
+
+    @Test
     @DisplayName("Powinien utworzyć nowego użytkownika")
     void shouldCreateUser() throws Exception {
         Users user = new Users();
