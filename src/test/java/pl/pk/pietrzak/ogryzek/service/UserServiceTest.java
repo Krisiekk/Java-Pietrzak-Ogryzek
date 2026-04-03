@@ -13,11 +13,13 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.web.server.ResponseStatusException;
 
 public class UserServiceTest {
 
@@ -68,6 +70,17 @@ public class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Powinien zwrocic pusty Optional gdy uzytkownik nie istnieje")
+    void shouldReturnEmptyOptionalWhenUserNotFound() {
+        when(userRepository.findById(999)).thenReturn(Optional.empty());
+
+        Optional<Users> result = userService.getUserById(999);
+
+        assertTrue(result.isEmpty());
+        verify(userRepository, times(1)).findById(999);
+    }
+
+    @Test
     @DisplayName("Powinien zapisac nowego uzytkownika")
     void shouldCreateUser() {
         Users user = new Users();
@@ -114,5 +127,34 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).existsById(1);
         verify(userRepository, times(1)).deleteById(1);
+    }
+
+    @Test
+    @DisplayName("Powinien rzucic blad 404 gdy uzytkownik nie istnieje podczas usuwania")
+    void shouldThrowExceptionWhenDeleteUserNotFound() {
+        when(userRepository.existsById(1)).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            userService.deleteUser(1);
+        });
+
+        assertEquals(404, exception.getStatusCode().value());
+        verify(userRepository, times(1)).existsById(1);
+    }
+
+    @Test
+    @DisplayName("Powinien rzucic blad gdy uzytkownik nie istnieje podczas aktualizacji")
+    void shouldThrowExceptionWhenUpdateUserNotFound() {
+        Users updatedUser = new Users();
+        updatedUser.setUsername("Updated");
+
+        when(userRepository.findById(1)).thenReturn(java.util.Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            userService.updateUser(1, updatedUser);
+        });
+
+        assertEquals("User not found", exception.getMessage());
+        verify(userRepository, times(1)).findById(1);
     }
 }

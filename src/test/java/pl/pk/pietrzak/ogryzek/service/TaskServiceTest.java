@@ -15,11 +15,13 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.web.server.ResponseStatusException;
 
 public class TaskServiceTest {
 
@@ -67,6 +69,17 @@ public class TaskServiceTest {
         assertTrue(result.isPresent());
         assertEquals("Task test", result.get().getName());
         verify(taskRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Powinien zwrocic pusty Optional gdy zadanie nie istnieje")
+    void shouldReturnEmptyOptionalWhenTaskNotFound() {
+        when(taskRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Optional<Task> result = taskService.getTaskById(999L);
+
+        assertTrue(result.isEmpty());
+        verify(taskRepository, times(1)).findById(999L);
     }
 
     @Test
@@ -128,5 +141,34 @@ public class TaskServiceTest {
 
         verify(taskRepository, times(1)).existsById(1L);
         verify(taskRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Powinien rzucic blad 404 gdy zadanie nie istnieje podczas usuwania")
+    void shouldThrowExceptionWhenDeleteTaskNotFound() {
+        when(taskRepository.existsById(1L)).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            taskService.deleteTask(1L);
+        });
+
+        assertEquals(404, exception.getStatusCode().value());
+        verify(taskRepository, times(1)).existsById(1L);
+    }
+
+    @Test
+    @DisplayName("Powinien rzucic blad 404 gdy zadanie nie istnieje podczas aktualizacji")
+    void shouldThrowExceptionWhenUpdateTaskNotFound() {
+        Task updatedTask = new Task();
+        updatedTask.setName("Updated");
+
+        when(taskRepository.findById(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            taskService.updateTask(1L, updatedTask);
+        });
+
+        assertEquals(404, exception.getStatusCode().value());
+        verify(taskRepository, times(1)).findById(1L);
     }
 }

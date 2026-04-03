@@ -70,6 +70,7 @@ public class ProjectControllerTest {
         verify(projectService, times(1)).getProjectById(1L);
     }
 
+
     @Test
     @DisplayName("Powinien utworzyć nowy projekt")
     void shouldCreateProject() throws Exception {

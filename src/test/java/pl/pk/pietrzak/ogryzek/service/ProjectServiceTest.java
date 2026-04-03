@@ -13,11 +13,13 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.web.server.ResponseStatusException;
 
 public class ProjectServiceTest {
 
@@ -65,6 +67,17 @@ public class ProjectServiceTest {
         assertTrue(result.isPresent());
         assertEquals("Project test", result.get().getName());
         verify(projectRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Powinien zwrocic pusty Optional gdy projekt nie istnieje")
+    void shouldReturnEmptyOptionalWhenProjectNotFound() {
+        when(projectRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Optional<Project> result = projectService.getProjectById(999L);
+
+        assertTrue(result.isEmpty());
+        verify(projectRepository, times(1)).findById(999L);
     }
 
     @Test
@@ -119,5 +132,34 @@ public class ProjectServiceTest {
 
         verify(projectRepository, times(1)).existsById(1L);
         verify(projectRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Powinien rzucic blad 404 gdy projekt nie istnieje podczas usuwania")
+    void shouldThrowExceptionWhenDeleteProjectNotFound() {
+        when(projectRepository.existsById(1L)).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            projectService.deleteProject(1L);
+        });
+
+        assertEquals(404, exception.getStatusCode().value());
+        verify(projectRepository, times(1)).existsById(1L);
+    }
+
+    @Test
+    @DisplayName("Powinien rzucic blad gdy projekt nie istnieje podczas aktualizacji")
+    void shouldThrowExceptionWhenUpdateProjectNotFound() {
+        Project updatedProject = new Project();
+        updatedProject.setName("Updated");
+
+        when(projectRepository.findById(1L)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            projectService.updateProject(1L, updatedProject);
+        });
+
+        assertEquals("Projekt nie znaleziony", exception.getMessage());
+        verify(projectRepository, times(1)).findById(1L);
     }
 }
