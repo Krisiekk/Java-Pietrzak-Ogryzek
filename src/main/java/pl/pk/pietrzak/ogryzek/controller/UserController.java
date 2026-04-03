@@ -4,9 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +33,14 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Pobierz uzytkownika po ID", description = "Zwraca jednego uzytkownika na podstawie ID")
+    public Optional<Users> getUserById(
+            @Parameter(description = "Id uzytkownika", required = true)
+            @PathVariable Integer id) {
+        return userService.getUserById(id);
+    }
+
     @PostMapping
     @Operation(summary = "Utworz nowego uzytkownika", description = "Tworzy nowego uzytkownika na podstawie przekazanych danych")
     public Users createUser(
@@ -58,8 +65,5 @@ public class UserController {
             @Parameter(description = "Id uzytkownika", required = true)
             @PathVariable Integer id) {
         userService.deleteUser(id);
-    @GetMapping("/{id}")
-    public Optional<Users> getUserById(@PathVariable Integer id) {
-        return userService.getUserById(id);
     }
 }

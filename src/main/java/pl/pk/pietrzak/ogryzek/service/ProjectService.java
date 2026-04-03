@@ -26,27 +26,15 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Project updateProject(Long id, Project projectData) {
-        Project existingProject = projectRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projekt o podanym id nie istnieje"));
 
-        existingProject.setName(projectData.getName());
-        existingProject.setDescription(projectData.getDescription());
-        existingProject.setUsers(projectData.getUsers());
 
-        return projectRepository.save(existingProject);
+    public Optional <Project> getProjectById(Long id) {
+        return projectRepository.findById(id);
     }
-
     public void deleteProject(Long id) {
         if (!projectRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Projekt o podanym id nie istnieje");
         }
-        projectRepository.deleteById(id);
-    }
-    public Optional <Project> getProjectById(Long id) {
-        return projectRepository.findById(id);
-    }
-    public  void deleteProject(Long id) {
         projectRepository.deleteById(id);
     }
 

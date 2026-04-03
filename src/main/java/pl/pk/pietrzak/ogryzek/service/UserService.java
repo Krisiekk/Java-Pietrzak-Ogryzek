@@ -26,15 +26,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Users updateUser(Integer id, Users userData) {
-        Users existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Uzytkownik o podanym id nie istnieje"));
 
-        existingUser.setUsername(userData.getUsername());
-        existingUser.setProjects(userData.getProjects());
-
-        return userRepository.save(existingUser);
-    }
 
     public void deleteUser(Integer id) {
         if (!userRepository.existsById(id)) {
@@ -46,9 +38,8 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public void deleteUser(Integer id) {
-        userRepository.deleteById(id);
-    }
+
+
 
     public Users updateUser(Integer id, Users updatedUser) {
         return userRepository.findById(id)

@@ -21,9 +21,26 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public Optional<Task> getTaskById(Long id) {
+        return taskRepository.findById(id);
+    }
+
     public Task createTask(Task task) {
         return taskRepository.save(task);
     }
+
+
+
+    public void deleteTask(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Zadanie o podanym id nie istnieje");
+        }
+        taskRepository.deleteById(id);
+    }
+
+
+
+
 
     public Task updateTask(Long id, Task taskData) {
         Task existingTask = taskRepository.findById(id)
@@ -36,34 +53,6 @@ public class TaskService {
         existingTask.setAssignedUser(taskData.getAssignedUser());
 
         return taskRepository.save(existingTask);
-    }
-
-    public void deleteTask(Long id) {
-        if (!taskRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Zadanie o podanym id nie istnieje");
-        }
-        taskRepository.deleteById(id);
-    }
-}
-    public Optional<Task> getTaskById(Long id) {
-        return taskRepository.findById(id);
-    }
-
-    public void deleteTask(Long id) {
-        taskRepository.deleteById(id);
-    }
-
-    public Task updateTask(Long id, Task updatedTask) {
-        return taskRepository.findById(id)
-                .map(task -> {
-                    task.setName(updatedTask.getName());
-                    task.setDescription(updatedTask.getDescription());
-                    task.setTaskType(updatedTask.getTaskType());
-                    task.setProject(updatedTask.getProject());
-                    task.setAssignedUser(updatedTask.getAssignedUser());
-                    return taskRepository.save(task);
-                })
-                .orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
 
