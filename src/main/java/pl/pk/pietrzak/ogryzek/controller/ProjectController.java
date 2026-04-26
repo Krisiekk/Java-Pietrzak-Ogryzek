@@ -58,7 +58,19 @@ public class ProjectController {
             @Parameter(description = "ID projektu do pobrania", required = true)
             @PathVariable Long id) {
         return projectService.getProjectById(id)
-                .orElseThrow(() -> new RuntimeException("Projekt nie znaleziony"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND,
+                        "Projekt nie znaleziony"));
+    }
+
+    @PostMapping("/{id}/users/{userId}")
+    @Operation(summary = "Przypisz użytkownika do projektu", description = "Przypisuje użytkownika do projektu")
+    public Project assignUserToProject(
+            @Parameter(description = "ID projektu", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "ID użytkownika", required = true)
+            @PathVariable Integer userId) {
+        return projectService.assignUserToProject(id, userId);
     }
 
 }
