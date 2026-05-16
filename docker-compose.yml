@@ -1,0 +1,51 @@
+
+services:
+  # PostgreSQL baza danych
+  postgres:
+    image: postgres:16-alpine
+    container_name: pietrzak-ogryzek-postgres
+    environment:
+      POSTGRES_DB: pietrzak_ogryzek_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pietrzak-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot aplikacja
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pietrzak-ogryzek-app
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/pietrzak_ogryzek_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pietrzak-network
+    restart: unless-stopped
+
+# Volume do przechowywania danych PostgreSQL
+volumes:
+  postgres_data:
+    driver: local
+
+# Network dla komunikacji między kontenerami
+networks:
+  pietrzak-network:
+    driver: bridge
+
